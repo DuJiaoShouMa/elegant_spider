@@ -7,8 +7,8 @@
 # @desc   : None
 from yarl import URL
 from rainbow_console import console, options
-from utils.elegant_spider.response import Response, convert
-from utils.elegant_spider.utils.ja3 import aiohttp_ssl, requests_session
+from elegant_spider.response import Response, convert
+from elegant_spider.utils.ja3 import aiohttp_ssl, requests_session
 
 
 class Downloader:
