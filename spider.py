@@ -1,0 +1,104 @@
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
+# @author : djs
+# @project: work_code
+# @file   : spider.py
+# @time   : 2023/5/11 14:27
+# @desc   : from xueao bro simple_spider project
+from urllib.parse import urlencode
+from elegant_spider.downloader import Downloader
+
+
+class MetaSpider(type):
+    def __new__(mcs, name, bases, attrs):
+        for pro in ('params', 'data', 'json', 'files', 'headers', 'cookies'):
+            if pro in attrs:
+                attrs[pro] = property(attrs[pro])
+        # if 'parse' in attrs:
+        #     attrs['parse'] = parse_displayer(attrs['parse'])
+        return type.__new__(mcs, name, bases, attrs)
+
+
+class Spider(Downloader, metaclass=MetaSpider):
+    def __init__(self, url: str, method: str = 'GET'):
+        assert url.startswith('http://') or url.startswith('https://'), 'url "%s" is not vaild url' % url
+        assert method.upper() in ['GET', 'POST'], 'method "%s" is not vaild method' % method
+        self.url = url
+        self.method = method
+
+    @property
+    def request_url(self):
+        params = self.params
+        if params and isinstance(params, dict):
+            return self.url + '?' + urlencode(params)
+        return self.url
+
+    def params(self):
+        pass
+
+    def data(self):
+        pass
+
+    def json(self):
+        pass
+
+    def files(self):
+        pass
+
+    def headers(self):
+        pass
+
+    def cookies(self):
+        pass
+
+    def parse(self, response, pretty_print: bool = False):
+        """
+
+        :param bool pretty_print:
+        :param Response response:
+        :return:
+        """
+        pass
+
+
+# spider = Spider('https://www.com')
+class MySpider(Spider):
+    def __init__(self):
+        super(MySpider, self).__init__("https://pagead2.googlesyndication.com/getconfig/sodar", 'get')
+
+    def params(self):
+        return {
+    "sv": "200",
+    "tid": "gda",
+    "tv": "r20230510",
+    "st": "env"
+}
+
+    def cookies(self):
+        pass
+
+    def headers(self):
+        return {
+    "authority": "pagead2.googlesyndication.com",
+    "accept": "*/*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "origin": "https://spidertools.cn",
+    "referer": "https://spidertools.cn/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"113\", \"Chromium\";v=\"113\", \"Not-A.Brand\";v=\"24\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+    "x-client-data": "CIy2yQEIpLbJAQipncoBCOeHywEIlKHLAQiunM0BCIWgzQEIiafNAQjFqs0BCPmrzQE="
+}
+
+
+api = MySpider()
+response = api.request(timeout=10)
+# print(repr(type(response)))
+print(response.json())
+
+# print(response.xpath(r"//div[@class='book-list']/ul/li/strong/h2/a[@class='name']/@href"))
+# print(MySpider().request_url)
